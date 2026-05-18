@@ -256,7 +256,32 @@
   }
     </script>
 
-  <style>body{font-family:Inter,Arial,sans-serif;margin:0;background:#fff7fa;color:#2d2024}main{max-width:980px;margin:auto;padding:40px 20px}h1,h2{font-family:Georgia,serif}.card{background:#fff;border:1px solid #f3d4df;border-radius:18px;padding:24px;margin:18px 0}.cta{display:inline-block;background:#d84f7c;color:#fff;padding:12px 18px;border-radius:999px;font-weight:700}.links a{display:inline-block;margin:6px 10px 0 0;color:#b93363}ul{line-height:1.8}</style>
+  <style>
+*{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden;scroll-behavior:smooth}
+body{font-family:Inter,Arial,sans-serif;margin:0;background:#fff7fa;color:#2d2024}
+main{max-width:980px;margin:auto;padding:44px 24px 64px}
+h1,h2{font-family:Georgia,serif;scroll-margin-top:96px;line-height:1.05}
+h1{font-size:clamp(2.4rem,7vw,4.2rem);margin:0 0 18px}
+h2{font-size:clamp(1.8rem,5vw,2.6rem);margin-top:0}
+p,li{line-height:1.75}
+.card{background:#fff;border:1px solid #f3d4df;border-radius:18px;padding:24px;margin:18px 0;width:100%;min-width:0;box-shadow:0 14px 36px rgba(185,51,99,.07)}
+.cta{display:inline-flex;align-items:center;justify-content:center;background:#d84f7c;color:#fff;padding:12px 18px;border-radius:999px;font-weight:700;text-align:center;min-height:46px;max-width:100%}
+.links{display:grid;gap:10px}
+.links a{display:inline-block;margin:0;color:#b93363;overflow-wrap:anywhere}
+ul{line-height:1.8;padding-left:22px}
+img,iframe,video{max-width:100%;height:auto}
+iframe,video{width:100%;border-radius:24px;overflow:hidden}
+section{scroll-margin-top:96px}
+@media(max-width:768px){
+  main{padding:32px 22px 86px}
+  h1{font-size:clamp(2.25rem,11vw,3.3rem);line-height:.98}
+  h2{font-size:clamp(1.75rem,8vw,2.5rem)}
+  .card{padding:20px;border-radius:20px;margin:16px 0}
+  .cta{width:100%;padding:14px 18px;white-space:normal}
+  .links{grid-template-columns:1fr}
+}
+</style>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TPTE2ZMHT8"></script>
   <script>
