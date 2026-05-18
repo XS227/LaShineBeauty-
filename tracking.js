@@ -1,5 +1,5 @@
 (function () {
-  const WHATSAPP_NUMBER = "90555053707";
+  const WHATSAPP_NUMBER = "905551859900";
 
   function getLanguage(target) {
     return (
