@@ -1,86 +1,12 @@
 (function () {
-  const WHATSAPP_NUMBER = "905551859900";
-
-  function getLanguage(target) {
-    return (
-      target.dataset.language ||
-      target.dataset.trackLanguage ||
-      document.documentElement.lang ||
-      "en"
-    ).toLowerCase();
-  }
-
-  function getCtaText(target) {
-    const text = (target.innerText || target.textContent || target.getAttribute("aria-label") || "")
-      .replace(/\s+/g, " ")
-      .trim();
-    return text || target.getAttribute("aria-label") || "CTA";
-  }
-
-  function getEventName(target) {
-    if (target.dataset.track) return target.dataset.track;
-
-    const href = target.getAttribute("href") || "";
-    const type = target.dataset.trackType || "";
-
-    if (type === "whatsapp" || href.includes("wa.me") || href.includes("whatsapp")) return "whatsapp_click";
-    if (type === "phone" || href.startsWith("tel:")) return "phone_click";
-    if (type === "instagram" || href.includes("instagram.com")) return "instagram_click";
-
-    return target.dataset.trackEvent || "cta_click";
-  }
-
-  function buildParams(target) {
-    return {
-      page_path: window.location.pathname,
-      page_title: document.title,
-      language: getLanguage(target),
-      service: target.dataset.service || target.dataset.trackService || "general",
-      cta_text: getCtaText(target),
-      cta_location: target.dataset.ctaLocation || target.dataset.trackLocation || "section"
-    };
-  }
-
-  function trackEvent(eventName, params = {}) {
-    try {
-      if (typeof window.gtag === "function") {
-        window.gtag("event", eventName, params);
-      }
-    } catch (error) {
-      console.warn("GA tracking failed", error);
-    }
-  }
-
-  function getWhatsAppMessage(target) {
-    const language = getLanguage(target).split("-")[0];
-    return (
-      target.dataset[`whatsappMessage${language.charAt(0).toUpperCase()}${language.slice(1)}`] ||
-      target.dataset.whatsappMessage ||
-      "Hi La Shine Beauty, I found you on Google and would like to book an appointment."
-    );
-  }
-
-  function updateWhatsAppHref(target) {
-    const href = target.getAttribute("href") || "";
-    if (!href.includes("wa.me") && !href.includes("whatsapp")) return;
-
-    const message = getWhatsAppMessage(target);
-    target.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-  }
-
-  document.addEventListener("click", function (event) {
-    const tracked = event.target.closest(
-      "a[data-track], a[data-track-event], a[href^='tel:'], a[href*='wa.me'], a[href*='instagram.com']"
-    );
-
-    if (!tracked) return;
-
-    updateWhatsAppHref(tracked);
-    trackEvent(getEventName(tracked), buildParams(tracked));
-  });
-
-  window.LaShineTracking = {
-    trackEvent,
-    updateWhatsAppHref
-  };
+  const STORAGE_KEY = "lashine_tracking_events";
+  const MAX_EVENTS = 50;
+  function deviceType(){const w=window.innerWidth; return w<768?'mobile':(w<1024?'tablet':'desktop');}
+  function getUtm(){const p=new URLSearchParams(location.search); const o={};['utm_source','utm_medium','utm_campaign','utm_term','utm_content'].forEach(k=>o[k]=p.get(k)||''); return o;}
+  function eventType(target){const href=target.getAttribute('href')||''; const t=target.dataset.trackType||''; if(t==='whatsapp'||href.includes('wa.me')) return 'whatsapp_click'; if(t==='phone'||href.startsWith('tel:')) return 'phone_click'; if(t==='instagram'||href.includes('instagram.com')) return 'instagram_click'; return target.dataset.trackEvent||'cta_click';}
+  function payload(target){return {event:eventType(target),track_type:target.dataset.trackType||'cta',service_page:target.dataset.trackService||'general',language:target.dataset.trackLanguage||document.documentElement.lang||'en',referrer:document.referrer||'',timestamp:new Date().toISOString(),device_type:deviceType(),page_path:location.pathname,utm:getUtm(),href:target.getAttribute('href')||''};}
+  function persist(ev){const arr=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); arr.unshift(ev); localStorage.setItem(STORAGE_KEY,JSON.stringify(arr.slice(0,MAX_EVENTS)));}
+  async function postLater(ev){return fetch('/api/track-event.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)});}
+  document.addEventListener('click',e=>{const t=e.target.closest("a[data-track-event],a[data-track-type],a[href*='wa.me'],a[href^='tel:'],a[href*='instagram.com']"); if(!t) return; const ev=payload(t); console.log('Tracking event',ev); persist(ev); window.LaShineTrackingLastEvent=ev;});
+  window.LaShineTracking={postLater};
 })();
