@@ -1,0 +1,6 @@
+<!doctype html><html><head><meta charset='utf-8'><title>Tracking Admin</title></head><body><h1>Tracking Dashboard (Placeholder)</h1><p><strong>Warning:</strong> Add real authentication before public use.</p><input type='password' placeholder='Password placeholder only'>
+<div id='stats'></div><script>
+const data=JSON.parse(localStorage.getItem('lashine_tracking_events')||'[]');
+const by=(k)=>data.reduce((a,e)=>(a[e[k]||'unknown']=(a[e[k]||'unknown']||0)+1,a),{});
+document.getElementById('stats').innerHTML=`<p>Total CTA clicks: ${data.length}</p><p>WhatsApp clicks: ${data.filter(e=>e.event==='whatsapp_click').length}</p><pre>By service: ${JSON.stringify(by('service_page'),null,2)}</pre><pre>By language: ${JSON.stringify(by('language'),null,2)}</pre><pre>Top pages: ${JSON.stringify(by('page_path'),null,2)}</pre><pre>Recent events: ${JSON.stringify(data.slice(0,10),null,2)}</pre>`;
+</script></body></html>
